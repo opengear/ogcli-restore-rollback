@@ -1,6 +1,6 @@
 # ogcli-restore-rollback
 
-Script improves on the existing ogcli restore command by adding a rollback if an error is detected. 
+Script wraps the existing ogcli restore command by adding a rollback if an error is detected. 
 
 Usage: ogcli-restore.py <template>
 
