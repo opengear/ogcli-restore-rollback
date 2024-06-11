@@ -1,9 +1,14 @@
 #!/usr/bin/python3
 #
 # ogcli-restore.py
-# Script runs ogcli restore with rollback if an error is detected
+# Opengear Solution Engineering
+# Updated 11 June 2024 by M. Witmer
+#
+# Script wraps the existing ogcli restore command 
+# by adding a rollback of ngcs.db if an error is detected.
 #
 # Usage: ogcli-restore.py <template>
+# Example: python3 ogcli-restore.py my-ngcs-template.txt
 
 
 import argparse
@@ -29,6 +34,17 @@ def userArgs():
     print(f'Running {command}...\n')
 
     return command
+
+# Create dir /tmp/rollback if it doesn't exist
+def checkDir():
+
+    directory_path = '/tmp/rollbacks'
+  
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+        print(f"\nDirectory created: {directory_path}")
+    else:
+        print(f"\nDirectory already exists: {directory_path}")
 
 # Create a rollback of the config db prior to restore
 def backUpDb(rollbackFile):
@@ -74,7 +90,7 @@ def rollback(rollbackFile):
     try:
         # Copy the file from source to destination
         shutil.copy(source_path, destination_path)
-        print(f"\nRollback complete. Exiting...\n")
+        print(f"\nRollback complete. Exiting...")
     except FileNotFoundError as e:
         print(f"Error: {e}")
     except Exception as e:
@@ -82,6 +98,10 @@ def rollback(rollbackFile):
         
 
 if __name__ == "__main__":
+
+    start_time = datetime.now() #for script timing debug
+
+    checkDir()
 
     # Create timestamped rollback file name 
     now = datetime.now()
@@ -91,3 +111,8 @@ if __name__ == "__main__":
     backUpDb(rollbackFile)
 
     restore(rollbackFile)
+
+    end_time = datetime.now() #for script timing debug
+
+    # Print script run time
+    print("\nScript Run Time: {}\n".format(end_time - start_time))
